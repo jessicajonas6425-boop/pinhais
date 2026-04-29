@@ -22,7 +22,7 @@ import {
 import { useState, useEffect, ReactNode, FormEvent } from 'react';
 
 const WHATSAPP_NUMBER = "554192850194";
-const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=Olá! Vi o site e quero aproveitar a promoção da Pinhais Net TV.`;
+const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=Olá! Vi o site e quero aproveitar a oferta de 500 MEGAS por R$119,90 com Instalação Grátis.`;
 
 // Official Logos - High resolution assets from Pinhais Telecom / PinhaisNet TV
 const LOGO_URL = "https://i.postimg.cc/P5LtNJs0/2cb7fae04e63ba4d58377fc56c8084da.png";
@@ -30,9 +30,8 @@ const LOGO_WHITE = LOGO_URL;
 const LOGO_COLOR = LOGO_URL;
 
 const PLANS = [
-  { mbps: "400", price: "99,90", color: "bg-brand-primary", highlighted: false },
-  { mbps: "500", price: "119,90", color: "bg-brand-primary", highlighted: false },
-  { mbps: "700", price: "129,90", color: "bg-brand-accent", highlighted: true },
+  { mbps: "500", price: "119,90", color: "bg-brand-primary", highlighted: true },
+  { mbps: "700", price: "129,90", color: "bg-brand-accent", highlighted: false },
   { mbps: "900", price: "149,90", color: "bg-brand-primary", highlighted: false },
 ];
 
@@ -57,26 +56,26 @@ const DIFFERENTIALS = [
 const TESTIMONIALS = [
   {
     name: "Ricardo Santos",
-    role: "Home Office / Pinhais",
-    text: "Internet voando! Melhor decisão que tomei pra trabalhar em casa. Estabilidade total e o suporte técnico realmente funciona.",
+    role: "Morador do Vargem Grande / Pinhais",
+    text: "Sou de Pinhais e a PinhaisNet foi a única que entregou a velocidade real aqui no Vargem Grande. Internet voando pra trabalhar em home office!",
     img: "https://i.pravatar.cc/150?img=11"
   },
   {
     name: "Juliana Oliveira",
-    role: "Dona de Casa",
-    text: "A TV por aplicativo é sensacional, não trava nada e a Netflix grátis é um baita diferencial pra economizar no fim do mês.",
+    role: "Emiliano Perneta / Pinhais",
+    text: "Moro no Emiliano Perneta e a TV por aplicativo é sensacional. O melhor é não ter que pagar Netflix por fora, já vem no plano!",
     img: "https://i.pravatar.cc/150?img=32"
   },
   {
     name: "Marcos Silveira",
-    role: "Gamer / Designer",
-    text: "Latência baixa e 700 mega real. Consigo baixar jogos gigantes em minutos. Recomendo pra quem joga online!",
+    role: "Weissópolis / Pinhais",
+    text: "Gamer aqui do Weissópolis recomenda: latência baixíssima. Consigo jogar sem lag nenhum. Atendimento local faz toda a diferença.",
     img: "https://i.pravatar.cc/150?img=12"
   },
   {
     name: "Ana Beatriz Lopes",
-    role: "Professora",
-    text: "Atendimento nota 10. Precisei de ajuda no sábado e me atenderam super rápido via WhatsApp. Provedor local é outra coisa!",
+    role: "Centro / Pinhais",
+    text: "Instalaram no mesmo dia que pedi aqui no Centro. Suporte via WhatsApp é muito humano e rápido. Recomendo para todos em Pinhais!",
     img: "https://i.pravatar.cc/150?img=44"
   }
 ];
@@ -84,43 +83,37 @@ const TESTIMONIALS = [
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<null | { mbps: string; price: string }>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
+  const [userCep, setUserCep] = useState("");
+
+  const handleOpenWhatsApp = (planMbps?: string) => {
+    const message = planMbps 
+      ? `Olá! Vi o site e quero assinar o plano de ${planMbps} MEGAS por R$119,90.`
+      : `Olá! Vi o site e quero consultar a disponibilidade da PinhaisNet para meu endereço.`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  const handleCepSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    handleOpenWhatsApp();
+  };
 
   useEffect(() => {
-    const splashTimer = setTimeout(() => setShowSplash(false), 7000);
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      clearTimeout(splashTimer);
     };
   }, []);
 
-  const handleOpenForm = (plan: { mbps: string; price: string }) => {
-    setSelectedPlan(plan);
-    setIsFormOpen(true);
-  };
+  const plan700 = PLANS[1];
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-brand-accent selection:text-white overflow-x-hidden">
-      <AnimatePresence>
-        {showSplash && <IntroSplash />}
-      </AnimatePresence>
-
       {/* Floating Elements */}
-      <WhatsAppFloat onOpenForm={() => handleOpenForm(PLANS[2])} />
+      <WhatsAppFloat onOpenForm={() => handleOpenWhatsApp()} />
       <SocialProofNotifications />
       <FloatingSalesBalloons />
-      <StickyMobileCTA onOpenForm={() => handleOpenForm(PLANS[2])} />
-
-      {/* Lead Modal */}
-      <LeadForm 
-        isOpen={isFormOpen} 
-        onClose={() => setIsFormOpen(false)} 
-        plan={selectedPlan} 
-      />
+      <StickyMobileCTA onOpenForm={() => handleOpenWhatsApp()} />
 
       {/* Header */}
       <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-sm border-b border-brand-border' : 'bg-transparent'}`}>
@@ -133,22 +126,28 @@ export default function App() {
           <div className={`flex justify-between items-center transition-all duration-300 ${scrolled ? 'py-2' : 'py-5'}`}>
             <Logo color={scrolled ? "brand" : "white"} className="h-10 md:h-12" />
             
-            {/* Urgency Bubble (Theme specific) */}
-            <div className="hidden lg:flex items-center">
+            <div className="hidden lg:flex items-center gap-6">
+              <button 
+                onClick={() => window.open(WHATSAPP_LINK, '_blank')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 font-bold text-xs transition-all ${scrolled ? 'border-brand-primary text-brand-primary' : 'border-white text-white'}`}
+              >
+                <Zap size={14} />
+                ASSINAR AGORA
+              </button>
               <div className="bg-brand-accent text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 pulse-urgency cursor-pointer">
                 <Zap size={14} />
-                SUPER PROMOÇÃO: 20 VAGAS DISPONÍVEIS!
+                OFERTA: 500 MEGA POR R$119,90!
               </div>
             </div>
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-6">
-              <a href="#planos" className={`text-sm font-bold hover:text-brand-accent transition-colors ${scrolled ? 'text-brand-text' : 'text-white'}`}>Planos</a>
-              <a href="#beneficios" className={`text-sm font-bold hover:text-brand-accent transition-colors ${scrolled ? 'text-brand-text' : 'text-white'}`}>Diferenciais</a>
-              <a href="#empresas" className={`text-sm font-bold hover:text-brand-accent transition-colors ${scrolled ? 'text-brand-text' : 'text-white'}`}>Empresas</a>
-              <a href="#sobre" className={`text-sm font-bold hover:text-brand-accent transition-colors ${scrolled ? 'text-brand-text' : 'text-white'}`}>Sobre</a>
+              <a href={WHATSAPP_LINK} className={`text-sm font-bold hover:text-brand-accent transition-colors ${scrolled ? 'text-brand-text' : 'text-white'}`}>Planos</a>
+              <a href={WHATSAPP_LINK} className={`text-sm font-bold hover:text-brand-accent transition-colors ${scrolled ? 'text-brand-text' : 'text-white'}`}>Diferenciais</a>
+              <a href={WHATSAPP_LINK} className={`text-sm font-bold hover:text-brand-accent transition-colors ${scrolled ? 'text-brand-text' : 'text-white'}`}>Empresas</a>
+              <a href={WHATSAPP_LINK} className={`text-sm font-bold hover:text-brand-accent transition-colors ${scrolled ? 'text-brand-text' : 'text-white'}`}>Sobre</a>
               <a href={WHATSAPP_LINK} className="bg-brand-primary text-white px-5 py-2 rounded-lg font-bold text-sm shadow-lg hover:brightness-110 transition-all">
-                Falar Consultor
+                ASSINAR AGORA
               </a>
             </div>
 
@@ -172,10 +171,10 @@ export default function App() {
             className="fixed inset-0 z-40 bg-white md:hidden pt-32 px-6"
           >
             <div className="flex flex-col space-y-6 text-xl font-display font-semibold">
-              <a href="#planos" onClick={() => setIsMenuOpen(false)}>Planos</a>
-              <a href="#beneficios" onClick={() => setIsMenuOpen(false)}>Diferenciais</a>
-              <a href="#empresas" onClick={() => setIsMenuOpen(false)}>Empresas</a>
-              <a href="#sobre" onClick={() => setIsMenuOpen(false)}>Sobre</a>
+              <a href={WHATSAPP_LINK} onClick={() => setIsMenuOpen(false)}>Planos</a>
+              <a href={WHATSAPP_LINK} onClick={() => setIsMenuOpen(false)}>Diferenciais</a>
+              <a href={WHATSAPP_LINK} onClick={() => setIsMenuOpen(false)}>Empresas</a>
+              <a href={WHATSAPP_LINK} onClick={() => setIsMenuOpen(false)}>Sobre</a>
               <div className="bg-brand-accent/10 p-4 rounded-xl text-brand-accent text-sm font-bold flex items-center gap-2">
                 <Zap size={18} />
                 PROMOÇÃO: 20 VAGAS RESTANTES!
@@ -193,40 +192,127 @@ export default function App() {
       </AnimatePresence>
 
       <main>
-        {/* Hero Section - Centered Clean Look */}
-        <section className="relative pt-40 pb-20 overflow-hidden bg-brand-text">
-          <div className="absolute inset-0 opacity-20">
+        {/* Hero Section - High Performance Sales Focused */}
+        <section className="relative bg-[#001D4A] overflow-hidden">
+          {/* Animated Fiber Lines */}
+          <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+            <svg width="100%" height="100%" className="w-full h-full">
+              {[...Array(6)].map((_, i) => (
+                <motion.path
+                  key={i}
+                  d={`M ${-100 + i * 200} 800 L ${400 + i * 150} -200`}
+                  stroke="rgba(0, 150, 255, 0.4)"
+                  strokeWidth="1"
+                  fill="none"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ 
+                    pathLength: [0, 1, 1],
+                    opacity: [0, 1, 0]
+                  }}
+                  transition={{ 
+                    duration: 4, 
+                    repeat: Infinity, 
+                    delay: i * 0.8,
+                    ease: "linear"
+                  }}
+                />
+              ))}
+            </svg>
+          </div>
+
+          <div className="absolute inset-0 opacity-10">
             <img 
-              src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&q=80&w=2070" 
-              alt="Fiber background" 
+              src="https://images.unsplash.com/photo-1558486012-817176f84c6d?auto=format&fit=crop&q=80&w=2070" 
+              alt="Fiber Network" 
               className="w-full h-full object-cover"
             />
           </div>
           
-          <div className="relative max-w-4xl mx-auto px-4 text-center">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
-            >
-              <h1 className="text-5xl md:text-7xl font-display font-extrabold text-white leading-tight tracking-tight">
-                Ultra Velocidade <br />
-                <span className="text-brand-primary">com Fibra Óptica</span>
-              </h1>
-              <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
-                Planos completos com Netflix Grátis e TV por Aplicativo para toda a família em Pinhais.
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-                <button 
-                  onClick={() => handleOpenForm(PLANS[2])}
-                  className="bg-brand-primary text-white px-10 py-4 rounded-xl font-extrabold text-lg shadow-xl hover:brightness-110 transition-all flex items-center justify-center gap-2"
-                >
-                  CONTRATAR AGORA
-                  <ArrowRight size={20} />
-                </button>
-              </div>
-            </motion.div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12 md:pt-48 md:pb-20 relative">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left Side: Copy */}
+              <motion.div 
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6 text-white text-center lg:text-left"
+              >
+                <div className="inline-flex items-center gap-2 bg-brand-accent/20 border border-brand-accent/30 px-3 py-1 rounded-full text-brand-accent text-xs font-black uppercase tracking-widest">
+                  <Zap size={14} className="fill-current" />
+                  OFERTA EXCLUSIVA PINHAIS
+                </div>
+                <h1 className="text-5xl md:text-7xl font-black leading-[1.1] tracking-tighter">
+                  500 Mega <br />
+                  R$ 119,90 <br />
+                  <span className="text-brand-accent">Instalação em 48h</span>
+                </h1>
+                <p className="text-lg md:text-xl text-slate-300 max-w-xl font-medium">
+                  Chegou a ultra velocidade que Pinhais precisava. <span className="text-white font-bold">Sem pegadinhas.</span> Suporte humano e local em Pinhais-PR.
+                </p>
+                <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                  <BenefitItem icon={<CheckCircle2 className="text-brand-accent" size={18} />} text="Sem Fidelidade / Sem Multa" />
+                  <BenefitItem icon={<CheckCircle2 className="text-brand-accent" size={18} />} text="Suporte Local Pinhais" />
+                  <BenefitItem icon={<CheckCircle2 className="text-brand-accent" size={18} />} text="Netflix Já Inclusa" />
+                </div>
+              </motion.div>
+
+              {/* Right Side: Sales Card with CEP field */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative mx-auto lg:ml-auto w-full max-w-md"
+              >
+                <div className="absolute -inset-1 bg-gradient-to-r from-brand-accent to-brand-primary rounded-[2.5rem] blur opacity-30 animate-pulse" />
+                <div className="relative bg-white rounded-[2rem] overflow-hidden shadow-2xl">
+                  <div className="bg-brand-accent p-4 text-center">
+                    <span className="text-white font-black text-xs uppercase tracking-[0.2em]">CONSULTE DISPONIBILIDADE AGORA</span>
+                  </div>
+                  <div className="p-8 text-center sm:p-10">
+                    <div className="flex items-baseline justify-center gap-1 mb-2">
+                      <span className="text-7xl md:text-8xl font-black text-[#001D4A] tracking-tighter">500</span>
+                      <span className="text-2xl md:text-3xl font-black text-brand-primary uppercase">Mega</span>
+                    </div>
+                    <p className="text-slate-500 font-bold mb-6">A Melhor Fibra de Pinhais</p>
+                    
+                    <div className="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
+                      <div className="flex items-baseline justify-center gap-1 font-black text-[#001D4A]">
+                        <span className="text-2xl">R$</span>
+                        <span className="text-6xl tracking-tighter">119</span>
+                        <span className="text-2xl">,90</span>
+                        <span className="text-xl text-slate-400 font-bold ml-1">/mês</span>
+                      </div>
+                      <p className="text-[10px] text-brand-primary font-black uppercase mt-2 tracking-widest">+ INSTALAÇÃO GRÁTIS + NETFLIX</p>
+                    </div>
+
+                    <form onSubmit={handleCepSubmit} className="space-y-3">
+                      <div className="relative">
+                        <input 
+                          type="text" 
+                          placeholder="Digite seu CEP" 
+                          value={userCep}
+                          onChange={(e) => setUserCep(e.target.value)}
+                          className="w-full px-6 py-4 rounded-xl border-2 border-slate-200 focus:border-brand-primary outline-none font-bold text-center text-[#001D4A]"
+                          maxLength={9}
+                        />
+                      </div>
+                      <button 
+                        type="submit"
+                        className="w-full bg-[#25D366] text-white py-5 rounded-2xl font-black text-xl shadow-xl shadow-green-500/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+                      >
+                        ASSINAR AGORA
+                        <ArrowRight size={24} />
+                      </button>
+                    </form>
+                    <p className="mt-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                      ⚡ Cobertura total em Pinhais-PR
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
+          
+          {/* Wave Decor */}
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-white" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0, 0 100%)' }} />
         </section>
 
         {/* Plans Grid - 4 Column Theme Style */}
@@ -249,17 +335,18 @@ export default function App() {
                   <div className="text-3xl font-extrabold text-brand-text mb-6">R$ {plan.price}</div>
 
                   <div className="space-y-3 mb-8 pt-6 border-t border-slate-100 text-left">
+                    <BenefitItem icon={<CheckCircle2 className="text-green-500" size={16} />} text="Sem Fidelidade ⚡" />
+                    <BenefitItem icon={<CheckCircle2 className="text-green-500" size={16} />} text="Instalação em 48h" />
+                    <BenefitItem icon={<CheckCircle2 className="text-green-500" size={16} />} text="Suporte Local Pinhais" />
                     <BenefitItem icon={<CheckCircle2 className="text-green-500" size={16} />} text="Netflix Incluso" />
-                    <BenefitItem icon={<CheckCircle2 className="text-green-500" size={16} />} text="TV por Aplicativo" />
-                    <BenefitItem icon={<CheckCircle2 className="text-green-500" size={16} />} text="Wi-Fi Performance" />
                   </div>
 
                   <button 
-                    onClick={() => handleOpenForm({ mbps: plan.mbps, price: plan.price })}
-                    className={`w-full py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 ${plan.highlighted ? 'bg-brand-accent text-white shadow-lg shadow-brand-accent/20' : 'bg-[#25D366] text-white'}`}
+                    onClick={() => handleOpenWhatsApp(plan.mbps)}
+                    className={`w-full py-4 rounded-xl font-extrabold text-lg transition-all shadow-lg flex items-center justify-center gap-2 ${plan.highlighted ? 'bg-[#25D366] text-white' : 'bg-brand-primary text-white hover:brightness-110'}`}
                   >
-                    <MessageCircle size={16} />
-                    Garantir Vaga Agora
+                    <MessageCircle size={20} />
+                    ASSINAR AGORA
                   </button>
                 </div>
               ))}
@@ -368,7 +455,7 @@ export default function App() {
                   <div className="text-3xl font-extrabold">R$ 29,90</div>
                 </div>
                 <button 
-                  onClick={() => handleOpenForm({ mbps: "Telefonia Fixa", price: "29,90" })}
+                  onClick={() => handleOpenWhatsApp("Telefonia Fixa")}
                   className="bg-white text-brand-text px-8 py-3 rounded-lg font-bold hover:bg-brand-primary hover:text-white transition-all"
                 >
                   Quero Telefone
@@ -411,11 +498,11 @@ export default function App() {
             <h2 className="text-3xl font-extrabold">A melhor conexão de Pinhais.</h2>
             <p className="text-slate-500">Ofertas válidas por tempo limitado ou enquanto durarem as 20 vagas.</p>
             <button 
-              onClick={() => handleOpenForm(PLANS[2])}
-              className="inline-flex items-center gap-3 bg-brand-primary text-white px-12 py-5 rounded-xl font-extrabold text-xl shadow-2xl hover:brightness-110 transition-all"
+              onClick={() => window.open(WHATSAPP_LINK, '_blank')}
+              className="inline-flex items-center gap-3 bg-[#25D366] text-white px-12 py-5 rounded-xl font-extrabold text-xl shadow-2xl hover:brightness-110 transition-all"
             >
-              Chamar no WhatsApp
-              <ArrowRight />
+              <MessageCircle size={24} />
+              ASSINAR AGORA PELO WHATSAPP
             </button>
           </div>
         </section>
@@ -435,7 +522,10 @@ export default function App() {
               <h4 className="font-bold text-brand-text text-sm uppercase tracking-widest">Contatos Oficiais</h4>
               <ul className="text-sm space-y-2">
                 <li className="flex items-center gap-2"><Phone size={14} className="text-brand-primary" /> (41) 4042-7600</li>
-                <li className="flex items-center gap-2"><MessageCircle size={14} className="text-brand-primary" /> (41) 99285-0194</li>
+                <li className="flex items-center gap-2">
+                  <MessageCircle size={14} className="text-brand-primary" /> 
+                  <a href={WHATSAPP_LINK} className="hover:text-brand-primary transition-colors underline decoration-brand-primary/30">(41) 99285-0194</a>
+                </li>
                 <li className="text-[11px]">callcenter@pinhaistelecom.com.br</li>
               </ul>
             </div>
@@ -470,25 +560,14 @@ export default function App() {
   );
 }
 
-function Logo({ color = "white", className = "" }: { color?: "white" | "brand", className?: string }) {
-  const [error, setError] = useState(false);
-  
-  if (error || !LOGO_URL) {
-    return (
-      <div className={`font-display font-extrabold tracking-tighter ${className} flex items-center ${color === 'white' ? 'text-white' : 'text-brand-primary'}`}>
-        <span className="text-2xl">PINHAIS</span>
-        <span className="text-brand-accent text-2xl">NET</span>
-      </div>
-    );
-  }
-
+function Logo({ color = "brand", className = "" }: { color?: "white" | "brand", className?: string }) {
   return (
     <div className={`transition-all duration-300 ${className} flex items-center`}>
       <img 
-        src={LOGO_URL} 
-        alt="PinhaisNet TV Logo" 
-        className={`h-full w-auto object-contain ${color === 'white' ? 'brightness-0 invert' : 'brightness-100'}`} 
-        onError={() => setError(true)}
+        src="https://i.postimg.cc/P5LtNJs0/2cb7fae04e63ba4d58377fc56c8084da.png" 
+        alt="PinhaisNet Logo" 
+        className={`h-full w-auto object-contain transition-all duration-300 ${color === 'white' ? 'brightness-0 invert' : ''}`}
+        referrerPolicy="no-referrer"
       />
     </div>
   );
@@ -747,205 +826,6 @@ function StickyMobileCTA({ onOpenForm }: { onOpenForm: () => void }) {
     </div>
   );
 }
-function IntroSplash() {
-  return (
-    <motion.div
-      exit={{ opacity: 0, filter: "brightness(2)" }}
-      transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
-      className="fixed inset-0 z-[200] bg-[#020617] flex items-center justify-center overflow-hidden"
-    >
-      {/* Cinematic Fiber Optic Background */}
-      <div className="absolute inset-0">
-        <svg width="100%" height="100%" className="w-full h-full opacity-80">
-          {[...Array(32)].map((_, i) => (
-            <g key={i}>
-              <motion.path
-                d={`M ${-200 + i * 60} 1300 Q ${400 + i * 40} ${600 - i * 10} ${1200 + i * 80} -300`}
-                stroke="url(#hdFiberGradient)"
-                strokeWidth={0.5 + Math.random() * 1.5}
-                fill="none"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ 
-                  pathLength: [0, 1, 1],
-                  opacity: [0, 0.6, 0],
-                }}
-                transition={{ 
-                  duration: 6 + Math.random() * 4, 
-                  repeat: Infinity, 
-                  delay: i * 0.15,
-                  ease: "easeInOut"
-                }}
-                className="drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]"
-              />
-              {/* Data Pulse Heads */}
-              <motion.circle
-                r="1.5"
-                fill="#fff"
-                initial={{ offsetDistance: "0%" }}
-                animate={{ offsetDistance: "100%" }}
-                transition={{ 
-                  duration: 2 + Math.random() * 3, 
-                  repeat: Infinity, 
-                  delay: i * 0.2,
-                  ease: "linear"
-                }}
-                style={{ 
-                  offsetPath: `path('M ${-200 + i * 60} 1300 Q ${400 + i * 40} ${600 - i * 10} ${1200 + i * 80} -300')`,
-                  filter: 'blur(1px) drop-shadow(0 0 5px #fff)'
-                }}
-              />
-            </g>
-          ))}
-          <defs>
-            <linearGradient id="hdFiberGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0" />
-              <stop offset="30%" stopColor="#38bdf8" stopOpacity="0.8" />
-              <stop offset="70%" stopColor="#f43f5e" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#fb7185" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
 
-      {/* Center Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.15, 0.35, 0.15]
-          }}
-          transition={{ duration: 5, repeat: Infinity }}
-          className="w-[800px] h-[800px] bg-blue-500/10 blur-[160px] rounded-full"
-        />
-      </div>
 
-      <div className="relative z-10 flex flex-col items-center">
-        <motion.div
-          initial={{ y: 30, opacity: 0, filter: "blur(15px) brightness(2)" }}
-          animate={{ y: 0, opacity: 1, filter: "blur(0px) brightness(1)" }}
-          transition={{ duration: 1.8, ease: "easeOut" }}
-          className="relative flex flex-col items-center"
-        >
-          {/* HD Vector Logo Implemenation for Splash */}
-          <div className="absolute inset-0 bg-brand-primary/20 blur-[80px] rounded-full" />
-          
-          <div className="flex items-baseline gap-1 relative z-10 scale-125 md:scale-150 py-10">
-            <span className="text-5xl md:text-6xl font-black text-white tracking-tighter drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]">
-              PINHAIS
-              <span className="text-brand-accent italic ml-1">NET</span>
-            </span>
-            <div className="h-4 w-4 rounded-full bg-brand-primary animate-pulse shadow-[0_0_15px_#0062FF]" />
-          </div>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.2 }}
-          className="mt-16 flex flex-col items-center gap-4"
-        >
-          <div className="h-[2px] w-64 bg-white/10 rounded-full overflow-hidden relative">
-            <motion.div 
-              initial={{ x: "-100%" }}
-              animate={{ x: "100%" }}
-              transition={{ duration: 6, ease: "linear" }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-[0_0_15px_#38bdf8]"
-            />
-          </div>
-          <motion.span 
-            animate={{ 
-              opacity: [0.4, 1, 0.4],
-              scale: [0.98, 1, 0.98]
-            }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="text-[13px] font-black text-white uppercase tracking-[0.7em] drop-shadow-[0_0_20px_rgba(255,255,255,0.6)] text-center pl-2"
-          >
-            Conectando você ao mundo
-          </motion.span>
-        </motion.div>
-      </div>
-
-      <div className="absolute inset-0 border-[20px] border-white/5 pointer-events-none" />
-    </motion.div>
-  );
-}
-
-function LeadForm({ isOpen, onClose, plan }: { isOpen: boolean; onClose: () => void; plan: { mbps: string; price: string } | null }) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-
-  if (!isOpen || !plan) return null;
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    const message = `Olá! Me chamo ${name} (Telefone: ${phone}). Tenho interesse no Plano de ${plan.mbps}MB por R$ ${plan.price}. Vi no site e quero aproveitar a promoção!`;
-    const link = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(link, '_blank');
-    onClose();
-    setName("");
-    setPhone("");
-  };
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-text/80 backdrop-blur-sm">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl relative"
-      >
-        <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-brand-text transition-colors"
-        >
-          <X size={24} />
-        </button>
-
-        <div className="p-8 text-center sm:p-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-primary/10 text-brand-primary mb-6">
-            <Zap size={32} />
-          </div>
-          
-          <h3 className="text-2xl font-extrabold text-brand-text mb-2">Quase lá!</h3>
-          <p className="text-slate-500 mb-8">
-            Preencha seus dados para garantirmos o plano de <span className="text-brand-primary font-bold">{plan.mbps}MB</span> para você no WhatsApp.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="text-left">
-              <label className="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Nome Completo</label>
-              <input 
-                required
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ex: João Silva"
-                className="w-full bg-slate-50 border border-brand-border rounded-xl px-4 py-3 text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all outline-none"
-              />
-            </div>
-
-            <div className="text-left">
-              <label className="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">whatsapp / telefone</label>
-              <input 
-                required
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="(41) 99999-9999"
-                className="w-full bg-slate-50 border border-brand-border rounded-xl px-4 py-3 text-brand-text focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all outline-none"
-              />
-            </div>
-
-            <button 
-              type="submit"
-              className="w-full bg-brand-primary text-white py-4 rounded-xl font-extrabold text-lg shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2"
-            >
-              FALAR COM VENDAS
-              <ArrowRight size={20} />
-            </button>
-            <p className="text-[10px] text-slate-400">Ao clicar, você será redirecionado para o nosso canal de vendas oficial.</p>
-          </form>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
