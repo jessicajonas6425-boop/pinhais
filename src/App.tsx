@@ -215,7 +215,7 @@ export default function App() {
               <Logo color={scrolled ? "brand" : "white"} className="h-10 md:h-12" />
             </button>
             
-            {/* Nav Switcher */}
+            {/* Nav Switcher - Desktop */}
             <div className="hidden lg:flex items-center bg-black/10 backdrop-blur-md rounded-full p-1 border border-white/10">
               <button 
                 onClick={() => setView('residential')}
@@ -228,6 +228,22 @@ export default function App() {
                 className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${view === 'business' ? 'bg-brand-primary text-white shadow-lg' : 'text-white/60 hover:text-white'}`}
               >
                 Empresarial
+              </button>
+            </div>
+
+            {/* Nav Switcher - Mobile (Always visible) */}
+            <div className="flex lg:hidden items-center bg-black/10 backdrop-blur-md rounded-full p-0.5 border border-white/10 ml-2">
+              <button 
+                onClick={() => setView('residential')}
+                className={`px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-tight transition-all ${view === 'residential' ? 'bg-brand-primary text-white shadow-md' : 'text-white/60'}`}
+              >
+                Res
+              </button>
+              <button 
+                onClick={() => setView('business')}
+                className={`px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-tight transition-all ${view === 'business' ? 'bg-brand-primary text-white shadow-md' : 'text-white/60'}`}
+              >
+                Bus
               </button>
             </div>
 
@@ -269,11 +285,22 @@ export default function App() {
             className="fixed inset-0 z-40 bg-white md:hidden pt-32 px-6"
           >
             <div className="flex flex-col space-y-6 text-xl font-display font-semibold">
+              <div className="flex items-center bg-slate-100 rounded-2xl p-1 mb-4">
+                <button 
+                  onClick={() => { setView('residential'); setIsMenuOpen(false); }}
+                  className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${view === 'residential' ? 'bg-brand-primary text-white shadow-lg' : 'text-slate-400'}`}
+                >
+                  Residencial
+                </button>
+                <button 
+                  onClick={() => { setView('business'); setIsMenuOpen(false); }}
+                  className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${view === 'business' ? 'bg-brand-primary text-white shadow-lg' : 'text-slate-400'}`}
+                >
+                  Empresarial
+                </button>
+              </div>
               <a href="#planos" onClick={() => setIsMenuOpen(false)}>Planos</a>
               <a href="#beneficios" onClick={() => setIsMenuOpen(false)}>Diferenciais</a>
-              <button onClick={() => { setView(view === 'residential' ? 'business' : 'residential'); setIsMenuOpen(false); }} className="text-left text-brand-primary">
-                {view === 'residential' ? 'Ir para Empresas' : 'Ir para Residencial'}
-              </button>
               <a href="#sobre" onClick={() => setIsMenuOpen(false)}>Sobre</a>
               <button 
                 onClick={() => { handleOpenWhatsApp(); setIsMenuOpen(false); }}
