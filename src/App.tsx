@@ -18,9 +18,11 @@ import {
   Menu,
   X,
   Phone,
-  Star
+  Star,
+  Check,
+  Globe
 } from 'lucide-react';
-import { useState, useEffect, ReactNode, FormEvent } from 'react';
+import React, { useState, useEffect, ReactNode, FormEvent } from 'react';
 
 const WHATSAPP_NUMBER = "554192850194";
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Quero o plano 500 Mega")}`;
@@ -78,23 +80,93 @@ const DIFFERENTIALS = [
   { title: "Equipamento", desc: "Roteadores em comodato inclusos." }
 ];
 
-function WhatsAppMessage({ name, role, text, time }: { name: string; role: string; text: string; time: string }) {
+interface WhatsAppMessageProps {
+  name: string;
+  role: string;
+  text: string;
+  time: string;
+  img: string;
+}
+
+function ExtremeHighConversionCTAs({ onOpenForm }: { onOpenForm: () => void }) {
   return (
-    <div className="flex flex-col gap-1 w-full max-w-[280px] sm:max-w-[320px]">
-      <div className="bg-[#DCF8C6] p-3 rounded-2xl rounded-tl-none shadow-sm relative border border-black/5">
-        <div className="text-[10px] font-bold text-emerald-700 uppercase mb-1 flex justify-between items-center">
-          <span>{name} • {role}</span>
+    <>
+      {/* Botão Superior Esquerdo - Consultar Disponibilidade */}
+      <motion.button
+        onClick={onOpenForm}
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        className="fixed top-24 left-4 z-[60] bg-white border-2 border-brand-primary p-3 rounded-2xl shadow-xl flex items-center gap-2 group hover:scale-105 transition-all"
+      >
+        <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+          <Globe size={18} className="animate-spin-slow" />
         </div>
-        <p className="text-sm text-slate-800 leading-relaxed">{text}</p>
+        <div className="text-left">
+          <p className="text-[10px] font-black text-brand-primary uppercase tracking-wider leading-none">Verificação Imediata</p>
+          <p className="text-xs font-extrabold text-brand-text">🔥 Consultar disponibilidade agora</p>
+        </div>
+      </motion.button>
+
+      {/* Badge Lateral Direita - Instalar Hoje */}
+      <motion.button
+        onClick={onOpenForm}
+        initial={{ x: 100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        whileHover={{ x: -5 }}
+        className="fixed top-1/2 right-0 z-[60] -translate-y-1/2 bg-brand-accent text-white py-4 px-2 rounded-l-2xl shadow-2xl flex flex-col items-center gap-3 border-l-2 border-white/20"
+      >
+        <Zap size={20} className="animate-bounce" />
+        <span className="[writing-mode:vertical-lr] font-black text-[10px] uppercase tracking-[0.2em] whitespace-nowrap">
+          🔥 Quero instalar hoje
+        </span>
+      </motion.button>
+
+      {/* Floating Inferior Central - Liberar Internet */}
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] w-full max-w-xs px-4 md:hidden">
+        <motion.button
+          onClick={onOpenForm}
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="w-full bg-brand-primary text-white py-3 rounded-full shadow-[0_10px_30px_rgba(0,184,255,0.4)] flex items-center justify-center gap-2 font-black text-xs uppercase tracking-widest border-2 border-white/20"
+        >
+          <Smartphone size={16} />
+          🔥 Liberar internet no meu endereço
+        </motion.button>
+      </div>
+    </>
+  );
+}
+
+const WhatsAppMessage: React.FC<WhatsAppMessageProps> = ({ name, role, text, time, img }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      className="flex flex-col gap-1 w-full max-w-[280px] sm:max-w-[340px] group"
+    >
+      <div className="flex items-center gap-3 mb-1 ml-1">
+        <img src={img} alt={name} className="w-10 h-10 rounded-full border-2 border-white shadow-md object-cover" />
+        <div>
+          <p className="text-[11px] font-bold text-slate-700 leading-none">{name}</p>
+          <p className="text-[9px] text-slate-500 font-medium">{role}</p>
+        </div>
+      </div>
+      <div className="bg-[#DCF8C6] p-3 rounded-2xl rounded-tl-none shadow-sm relative border border-black/5">
+        {/* Chat Bubble Tail */}
+        <div className="absolute -left-2 top-0 w-4 h-4 bg-[#DCF8C6] border-l border-t border-black/5 rotate-45 -translate-x-1/2 translate-y-1 pointer-events-none" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
+        
+        <p className="text-[13px] text-slate-800 leading-relaxed font-medium">"{text}"</p>
+        
         <div className="flex justify-end mt-1 items-center gap-1">
-          <span className="text-[9px] text-slate-500">{time}</span>
-          <div className="flex">
-            <CheckCircle2 size={10} className="text-blue-500" />
-            <CheckCircle2 size={10} className="text-blue-500 -ml-1" />
+          <span className="text-[9px] text-slate-500 font-bold">{time}</span>
+          <div className="flex -space-x-1">
+            <Check size={10} className="text-blue-500" strokeWidth={3} />
+            <Check size={10} className="text-blue-500" strokeWidth={3} />
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -124,23 +196,23 @@ const TESTIMONIALS = [
 
 const BUSINESS_TESTIMONIALS = [
   {
-    name: "Roberto Almeida",
-    role: "CEO - Tech Solutions (Pinhais)",
-    text: "O Link Dedicado da PinhaisNet mudou nosso patamar aqui no centro de Pinhais. SLA cumprido à risca e latência perfeita para nossos servidores.",
+    name: "Roberto (Tech Solution)",
+    role: "Proprietário",
+    text: "Cara, o Link Dedicado de vocês salvou meu servidor. Antes eu sofria com IP mudando toda hora e o upload era horrível. Agora tá 100% simétrico e IP fixo redondo. Recomendo demais!",
     time: "10:30",
     img: "https://i.pravatar.cc/150?img=59"
   },
   {
-    name: "Cláudia Souza",
-    role: "Gerente de TI - Logística Colombo",
-    text: "O transporte PTT facilitou nossa comunicação entre matriz em Colombo e filial. Estabilidade que nunca tivemos com grandes operadoras.",
+    name: "Cláudia (Logística PR)",
+    role: "Gerente de TI",
+    text: "Finalmente uma internet que não cai quando chove! Saímos da [Grande Operadora] porque o suporte era terrível. Aqui o SLA é real, os guris resolvem na hora.",
     time: "15:20",
     img: "https://i.pravatar.cc/150?img=47"
   },
   {
-    name: "Sérgio Mendes",
-    role: "Provedor Local - Pinhais/Piraquara",
-    text: "Alugamos porta PON com a PinhaisNet em Pinhais e a escalabilidade é fantástica. Conseguimos crescer nossa base rapidamente.",
+    name: "Sérgio (Provedor Local)",
+    role: "Diretor Técnico",
+    text: "O transporte PTT de vocês tem a melhor latência que já testamos pra SP. Link simétrico de verdade, batendo a banda cheia o dia todo sem gargalo.",
     time: "11:45",
     img: "https://i.pravatar.cc/150?img=68"
   }
@@ -190,6 +262,7 @@ export default function App() {
   return (
     <div className={`min-h-screen flex flex-col selection:bg-brand-accent selection:text-white overflow-x-hidden ${view === 'business' ? 'bg-[#001D4A]' : 'bg-white'}`}>
       {/* Floating Elements */}
+      <ExtremeHighConversionCTAs onOpenForm={() => handleOpenWhatsApp()} />
       <WhatsAppFloat onOpenForm={() => handleOpenWhatsApp()} isBusiness={view === 'business'} />
       <SocialProofNotifications isBusiness={view === 'business'} />
       <FloatingSalesBalloons isBusiness={view === 'business'} />
@@ -1074,14 +1147,44 @@ function ResidentialContent({ handleOpenWhatsApp, userCep, setUserCep, handleCep
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-8">
+      <section className="py-24 bg-slate-50 relative overflow-hidden">
+        {/* Subtle WhatsApp-like Pattern Background */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://i.pinimg.com/originals/97/c0/07/97c0075414d49f051bfc30fa65b866fe.jpg')] bg-repeat" />
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="text-center mb-16 space-y-4">
+            <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-2 shadow-sm border border-emerald-200">
+              <MessageCircle size={14} className="fill-current" />
+              Conversas Reais no WhatsApp
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-brand-text tracking-tighter leading-tight">
+              Quem usa, <span className="text-brand-primary uppercase underline underline-offset-8 decoration-brand-accent/30">aprova</span> e confia.
+            </h2>
+            <p className="text-slate-500 max-w-2xl mx-auto text-lg font-medium">
+              Mais de 5.000 famílias em Pinhais e região já escolheram a fibra que não te deixa na mão. Confira os relatos reais.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-10 md:gap-x-12 md:gap-y-14">
             {TESTIMONIALS.map((t, idx) => (
-              <div key={idx} className="flex flex-col items-center">
-                <WhatsAppMessage name={t.name} role={t.role} text={t.text} time={t.time} />
-              </div>
+              <WhatsAppMessage 
+                key={idx} 
+                name={t.name} 
+                role={t.role} 
+                text={t.text} 
+                time={t.time} 
+                img={t.img}
+              />
             ))}
+          </div>
+          
+          <div className="mt-16 text-center">
+            <div className="inline-flex items-center gap-3 bg-white px-8 py-4 rounded-[2rem] shadow-xl border border-slate-100">
+              <div className="flex text-yellow-400">
+                {[...Array(5)].map((_, i) => <Star key={i} size={18} fill="currentColor" />)}
+              </div>
+              <span className="font-black text-brand-text text-sm">4.9/5 Nota no Google</span>
+            </div>
           </div>
         </div>
       </section>
@@ -1090,71 +1193,163 @@ function ResidentialContent({ handleOpenWhatsApp, userCep, setUserCep, handleCep
 }
 
 function BusinessContent({ handleOpenWhatsApp }: { handleOpenWhatsApp: (plan?: string) => void }) {
+  const [cep, setCep] = useState('');
+
+  const handleCepSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (cep.length >= 8) {
+      window.open(`https://wa.me/5541999999999?text=Olá! Gostaria de consultar viabilidade de Link Dedicado para o CEP: ${cep}`, '_blank');
+    }
+  };
+
   return (
     <>
-      {/* Business Hero */}
-      <section className="relative bg-[#001D4A] pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2069')] bg-cover" />
-        <div className="max-w-7xl mx-auto px-4 relative z-10 text-center lg:text-left flex flex-col lg:flex-row items-center gap-12">
-          <div className="lg:w-2/3 space-y-6">
-            <div className="inline-flex items-center gap-2 bg-brand-primary/20 text-brand-primary px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-brand-primary/30 shadow-[0_0_20px_rgba(0,184,255,0.2)]">
-              📈 Conectividade de Alto Desempenho
-            </div>
-            <h1 className="text-5xl md:text-7xl font-black text-white leading-tight tracking-tighter">
-              A INTERNET <br />
-              QUE <span className="text-brand-primary">IMPULSIONA</span> <br />
-              SEU NEGÓCIO.
-            </h1>
-            <p className="text-slate-300 text-lg md:text-xl max-w-2xl font-medium">
-              Link Dedicado, SLA Gerenciado e Atendimento Prioritário. Infraestrutura com Conexão Direta ao IX-BR para máxima performance.
-            </p>
-            <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-sm">
-                <ShieldCheck size={20} className="text-brand-primary" />
-                <span className="text-sm font-bold text-white">SLA 99.9%</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-sm">
-                <Zap size={20} className="text-brand-primary" />
-                <span className="text-sm font-bold text-white">Suporte 24/7/365</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl backdrop-blur-sm">
-                <Smartphone size={20} className="text-brand-primary" />
-                <span className="text-sm font-bold text-white">Gerente Dedicado</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="lg:w-1/3 w-full max-w-sm">
-             {/* CTA CARD for 800MB based on image */}
-             <div className="relative bg-white rounded-[2.5rem] p-8 text-center shadow-3xl transform hover:scale-[1.02] transition-all duration-500 border-b-8 border-brand-primary">
-                <div className="mb-6">
-                  <span className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] bg-brand-primary/5 px-3 py-1 rounded-full border border-brand-primary/10">EXCLUSIVO CNPJ</span>
-                  <div className="flex items-baseline justify-center gap-1 mt-4">
-                    <h2 className="text-6xl font-black text-brand-text tracking-tighter">800</h2>
-                    <span className="text-2xl font-black text-brand-primary uppercase">Mega</span>
-                  </div>
-                  <p className="text-brand-primary font-black uppercase text-xs tracking-[0.3em] mt-1 italic">Link Dedicado Full</p>
-                </div>
+      {/* Business Hero - Extreme Conversion Focus */}
+      <section className="relative bg-[#001D4A] overflow-hidden">
+        {/* Background Overlay */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#001D4A] via-[#002D72] to-[#001D4A]" />
+        
+        {/* Tech Energy Background */}
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+          <svg width="100%" height="100%" className="w-full h-full">
+            {[...Array(12)].map((_, i) => (
+              <motion.path
+                key={i}
+                d={`M 0 ${100 + i * 100} L 1600 ${50 + i * 60}`}
+                stroke="rgba(0, 150, 255, 0.4)"
+                strokeWidth="0.5"
+                fill="none"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: [0, 1, 1], opacity: [0, 0.5, 0] }}
+                transition={{ duration: 4, repeat: Infinity, delay: i * 0.3, ease: "linear" }}
+              />
+            ))}
+          </svg>
+        </div>
 
-                <div className="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Investimento Mensal</span>
-                  <div className="flex items-baseline justify-center gap-1 font-black text-brand-text">
-                    <span className="text-xl">R$</span>
-                    <span className="text-5xl tracking-tighter">899</span>
-                    <span className="text-xl">,90</span>
-                  </div>
-                  <p className="text-[10px] text-brand-primary font-black uppercase mt-3 tracking-widest">+ IP FIXO + SLA GARANTIDO</p>
+        <div className="absolute inset-0 opacity-20 filter grayscale blur-[2px]">
+          <img 
+            src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2069" 
+            alt="Business Center" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-12 md:pt-48 md:pb-24 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left Box: Business Values */}
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="space-y-8 text-white text-center lg:text-left"
+            >
+              <div className="flex flex-col sm:flex-row items-center gap-4 mb-2">
+                <div className="inline-flex items-center gap-3 bg-brand-primary/20 border-2 border-brand-primary/40 px-6 py-3 rounded-full text-brand-primary text-base md:text-lg font-black uppercase tracking-tighter shadow-[0_0_30px_rgba(0,184,255,0.3)] animate-pulse">
+                  <Zap size={22} className="fill-current" />
+                  CONECTIVIDADE CORPORATIVA: 100% GARANTIA DE BANDA
                 </div>
+              </div>
+              
+              <h1 className="text-5xl md:text-8xl font-black leading-[0.95] tracking-tighter">
+                Sua Empresa <br />
+                <span className="text-brand-primary uppercase">não para</span> <br />
+                com PinhaisNet.
+              </h1>
+              
+              <p className="text-lg md:text-2xl text-slate-300 max-w-xl font-medium leading-relaxed">
+                Abandone a instabilidade. Tenha <span className="text-white font-bold">Link Dedicado Full</span>, IP Fixo e SLA gerencial real. Latência mínima para PTT-PR.
+              </p>
 
-                <button 
-                  onClick={() => handleOpenWhatsApp("Empresarial 800 Mega Dedicado")}
-                  className="w-full bg-[#001D4A] text-white py-5 rounded-2xl font-black text-lg shadow-xl shadow-blue-900/30 hover:bg-brand-primary transition-all flex items-center justify-center gap-3"
-                >
-                  <MessageCircle size={24} />
-                  FALAR COM GERENTE
-                </button>
-                <p className="mt-4 text-[9px] text-slate-400 font-bold uppercase tracking-widest">Viabilidade técnica imediata</p>
-             </div>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
+                  <ShieldCheck size={28} className="text-brand-primary" />
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-wider leading-none mb-1">SLA 99.9%</p>
+                    <p className="text-[10px] text-slate-400 font-bold">Disponibilidade Real</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
+                  <Globe size={28} className="text-brand-primary" />
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-wider leading-none mb-1">IP FIXO</p>
+                    <p className="text-[10px] text-slate-400 font-bold">Grátis Inclusos</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right Box: Hero Sales Card for Business */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className="relative mx-auto lg:ml-auto w-full max-w-md"
+            >
+              <div className="absolute -inset-2 bg-gradient-to-r from-brand-primary to-blue-400 rounded-[3rem] blur-xl opacity-20" />
+              <div className="relative bg-white rounded-[2.5rem] overflow-hidden shadow-3xl transform hover:scale-[1.01] transition-all">
+                <div className="bg-[#001D4A] p-5 text-center border-b-4 border-brand-primary">
+                  <span className="text-white font-black text-xs uppercase tracking-[0.3em]">OFERTA BLACK JUNHO CNPJ</span>
+                </div>
+                
+                <div className="p-8 sm:p-12 text-center text-brand-text">
+                  <div className="flex flex-col items-center mb-8">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">LINK DEDICADO ULTRA</span>
+                    <div className="flex items-baseline justify-center gap-1">
+                      <h2 className="text-8xl font-black text-[#001D4A] tracking-tighter leading-none">800</h2>
+                      <span className="text-3xl font-black text-brand-primary uppercase">Mega</span>
+                    </div>
+                    <div className="mt-4 flex items-center gap-2 text-brand-primary font-black text-[10px] bg-brand-primary/10 px-6 py-2 rounded-full border border-brand-primary/20">
+                      <CheckCircle2 size={12} /> REDE NEUTRA + IP FIXO
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 rounded-[2rem] p-8 mb-10 border border-slate-100 shadow-inner">
+                    <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-2">Investimento Mensal</p>
+                    <div className="flex items-baseline justify-center gap-1 font-black text-[#001D4A]">
+                      <span className="text-2xl">R$</span>
+                      <span className="text-7xl tracking-tighter leading-none">899</span>
+                      <span className="text-2xl">,90</span>
+                      <span className="text-xl text-slate-400 font-bold ml-1">/mês</span>
+                    </div>
+                    <div className="mt-6 pt-6 border-t border-slate-200 grid grid-cols-2 gap-4">
+                        <div className="text-left">
+                          <p className="text-[9px] font-black text-slate-400 uppercase">INSTALAÇÃO</p>
+                          <p className="text-xs font-black text-green-600">GRÁTIS*</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[9px] font-black text-slate-400 uppercase">SUPORTE</p>
+                          <p className="text-xs font-black text-brand-primary uppercase">PRIORITÁRIO 24H</p>
+                        </div>
+                    </div>
+                  </div>
+
+                  <form onSubmit={handleCepSubmit} className="space-y-4">
+                    <div className="relative group">
+                      <input 
+                        type="text" 
+                        placeholder="CEP da sua Empresa" 
+                        value={cep}
+                        onChange={(e) => setCep(e.target.value)}
+                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-5 focus:border-brand-primary focus:ring-0 transition-all font-bold text-center text-lg placeholder:text-slate-300 group-hover:bg-white"
+                      />
+                    </div>
+                    <button 
+                      type="submit"
+                      className="w-full bg-[#001D4A] text-white py-6 rounded-2xl font-black text-xl shadow-2xl hover:bg-brand-primary transition-all flex items-center justify-center gap-3 group overflow-hidden relative"
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-brand-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                        initial={false}
+                      />
+                      <MessageCircle size={28} className="relative z-10 group-hover:rotate-12 transition-transform" />
+                      <span className="relative z-10">CONSULTAR VIABILIDADE</span>
+                    </button>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.25em] animate-pulse">
+                      ⚡ ÚNICAS PORTAS DISPONÍVEIS NO PTT-PR
+                    </p>
+                  </form>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -1269,20 +1464,34 @@ function BusinessContent({ handleOpenWhatsApp }: { handleOpenWhatsApp: (plan?: s
       </section>
 
       {/* Business Testimonials */}
-      <section className="py-20 bg-brand-text">
-        <div className="max-w-7xl mx-auto px-4">
-           <div className="text-center mb-16">
-              <h2 className="text-4xl font-extrabold text-white">O QUE DIZEM NOSSOS <span className="text-brand-primary uppercase">PARCEIROS</span></h2>
+      <section className="py-24 bg-brand-text relative overflow-hidden">
+        {/* Subtle WhatsApp-like Pattern Background */}
+        <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://i.pinimg.com/originals/97/c0/07/97c0075414d49f051bfc30fa65b866fe.jpg')] bg-repeat" />
+
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+           <div className="text-center mb-20 space-y-4">
+              <div className="inline-flex items-center gap-2 bg-brand-primary/20 text-brand-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-2 border border-brand-primary/30">
+                <MessageCircle size={14} className="fill-current" />
+                RELATOS DE PARCEIROS CORPORATIVOS
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none">
+                ESTABILIDADE QUE <span className="text-brand-primary uppercase">GERA LUCRO.</span>
+              </h2>
+              <p className="text-slate-400 max-w-2xl mx-auto text-lg">
+                Veja como empresas de Pinhais e Colombo resolveram seus problemas de conexão com nossa infraestrutura dedicada.
+              </p>
            </div>
-           <div className="flex flex-wrap justify-center gap-8">
+           
+           <div className="flex flex-wrap justify-center gap-10 md:gap-x-12 md:gap-y-14">
               {BUSINESS_TESTIMONIALS.map((t, idx) => (
-                <div key={idx} className="flex flex-col items-center">
-                  <div className="flex items-center gap-2 mb-2 w-full max-w-[320px]">
-                    <img src={t.img} alt={t.name} className="w-8 h-8 rounded-full border border-white/20" />
-                    <span className="text-xs font-bold text-slate-400">{t.name}</span>
-                  </div>
-                  <WhatsAppMessage name={t.name} role={t.role} text={t.text} time={t.time} />
-                </div>
+                <WhatsAppMessage 
+                  key={idx} 
+                  name={t.name} 
+                  role={t.role} 
+                  text={t.text} 
+                  time={t.time} 
+                  img={t.img}
+                />
               ))}
            </div>
         </div>
