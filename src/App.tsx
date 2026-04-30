@@ -25,6 +25,7 @@ import {
 import React, { useState, useEffect, ReactNode, FormEvent } from 'react';
 
 const WHATSAPP_NUMBER = "554192850194";
+const WHATSAPP_NUMBER_BUSINESS = "554140427600";
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Quero o plano 500 Mega")}`;
 
 // Official Logos - High resolution assets from Pinhais Telecom / PinhaisNet TV
@@ -273,6 +274,7 @@ export default function App() {
         isOpen={isFormOpen} 
         onClose={() => setIsFormOpen(false)} 
         planMbps={selectedPlanMbps} 
+        isBusiness={view === 'business'}
       />
 
       {/* Header */}
@@ -445,7 +447,9 @@ export default function App() {
                 <li className="flex items-center gap-2"><Phone size={14} className="text-brand-primary" /> (41) 4042-7600</li>
                 <li className="flex items-center gap-2">
                   <MessageCircle size={14} className="text-brand-primary" /> 
-                  <button onClick={() => handleOpenWhatsApp()} className="hover:text-brand-primary transition-colors underline decoration-brand-primary/30">(41) 99285-0194</button>
+                  <button onClick={() => handleOpenWhatsApp()} className="hover:text-brand-primary transition-colors underline decoration-brand-primary/30">
+                    {view === 'business' ? '(41) 4042-7600' : '(41) 99285-0194'}
+                  </button>
                 </li>
                 <li className="text-[11px]">callcenter@pinhaistelecom.com.br</li>
               </ul>
@@ -528,7 +532,7 @@ function FeatureCard({ icon, title, desc }: FeatureCardProps) {
   );
 }
 
-function LeadForm({ isOpen, onClose, planMbps }: { isOpen: boolean; onClose: () => void; planMbps?: string }) {
+function LeadForm({ isOpen, onClose, planMbps, isBusiness }: { isOpen: boolean; onClose: () => void; planMbps?: string; isBusiness?: boolean }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -539,7 +543,8 @@ function LeadForm({ isOpen, onClose, planMbps }: { isOpen: boolean; onClose: () 
     e.preventDefault();
     const planText = planMbps ? `Plano de ${planMbps} Mega` : "Consulta de Disponibilidade";
     const message = `Olá! Me chamo ${name}. \nEmail: ${email} \nTelefone: ${phone} \nTenho interesse no ${planText}. Vi no site e quero aproveitar a oferta!`;
-    const link = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    const targetNumber = isBusiness ? WHATSAPP_NUMBER_BUSINESS : WHATSAPP_NUMBER;
+    const link = `https://wa.me/${targetNumber}?text=${encodeURIComponent(message)}`;
     window.open(link, '_blank');
     onClose();
     setName("");
@@ -1198,7 +1203,7 @@ function BusinessContent({ handleOpenWhatsApp }: { handleOpenWhatsApp: (plan?: s
   const handleCepSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (cep.length >= 8) {
-      window.open(`https://wa.me/5541999999999?text=Olá! Gostaria de consultar viabilidade de Link Dedicado para o CEP: ${cep}`, '_blank');
+      window.open(`https://wa.me/${WHATSAPP_NUMBER_BUSINESS}?text=Olá! Gostaria de consultar viabilidade de Link Dedicado para o CEP: ${cep}`, '_blank');
     }
   };
 
